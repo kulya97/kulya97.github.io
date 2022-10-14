@@ -2847,9 +2847,6 @@ body {
 .posts-expand .post-header {
   margin-bottom: 20px;
 }
-.post-eof {
-  display: none;
-}
 .post-body {
   padding-left: 40px;
   padding-right: 40px;
