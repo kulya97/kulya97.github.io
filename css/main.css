@@ -2847,6 +2847,10 @@ body {
 .posts-expand .post-header {
   margin-bottom: 20px;
 }
+.post-eof {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
 .post-body {
   padding-left: 40px;
   padding-right: 40px;
