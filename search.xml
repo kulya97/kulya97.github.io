@@ -351,4 +351,11 @@
 <p>sd</p>
 ]]></content>
   </entry>
+  <entry>
+    <title>VIVADO报错Invalid option value specified for &#39;-files&#39;.解决办法。</title>
+    <url>/2022/10/12/viado%E6%8A%A5%E9%94%99/</url>
+    <content><![CDATA[<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>解决方法是在设置中取消勾选<code>Use Core Containers for IP</code>。</p>
+<p><img src="https://kulya-pic.oss-cn-shanghai.aliyuncs.com/202210150104839.png" alt="221015_010153"></p>
+]]></content>
+  </entry>
 </search>
