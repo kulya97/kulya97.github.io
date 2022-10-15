@@ -3,7 +3,8 @@
   <entry>
     <title>VIVADO使用VScode作为文本编辑器的注意事项</title>
     <url>/2022/10/15/viado%E4%BD%BF%E7%94%A8VScode/</url>
-    <content><![CDATA[<h1 id="设置VScode为vivado的代码编辑器（待编写）"><a href="#设置VScode为vivado的代码编辑器（待编写）" class="headerlink" title="设置VScode为vivado的代码编辑器（待编写）"></a>设置VScode为vivado的代码编辑器（待编写）</h1><h1 id="功能：代码格式化功能-待编写"><a href="#功能：代码格式化功能-待编写" class="headerlink" title="功能：代码格式化功能(待编写)"></a>功能：代码格式化功能(待编写)</h1><h1 id="BUG-用VScode打开代码经常卡死，磁盘占用拉满"><a href="#BUG-用VScode打开代码经常卡死，磁盘占用拉满" class="headerlink" title="BUG:用VScode打开代码经常卡死，磁盘占用拉满"></a>BUG:用VScode打开代码经常卡死，磁盘占用拉满</h1><p>原因是vivado没有正常解析VScode的启动命令。解决的方法也很简单只要把Text Editor的启动命令改成下面这段命令就可以了。</p>
+    <content><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>记录vivado使用VScode作为文本编辑器时的设置和bug处理方式。</p>
+<h1 id="设置VScode为vivado的代码编辑器（待编写）"><a href="#设置VScode为vivado的代码编辑器（待编写）" class="headerlink" title="设置VScode为vivado的代码编辑器（待编写）"></a>设置VScode为vivado的代码编辑器（待编写）</h1><h1 id="功能：代码格式化功能-待编写"><a href="#功能：代码格式化功能-待编写" class="headerlink" title="功能：代码格式化功能(待编写)"></a>功能：代码格式化功能(待编写)</h1><h1 id="BUG-用VScode打开代码经常卡死，磁盘占用拉满"><a href="#BUG-用VScode打开代码经常卡死，磁盘占用拉满" class="headerlink" title="BUG:用VScode打开代码经常卡死，磁盘占用拉满"></a>BUG:用VScode打开代码经常卡死，磁盘占用拉满</h1><p>原因是vivado没有正常解析VScode的启动命令。解决的方法也很简单只要把Text Editor的启动命令改成下面这段命令就可以了。</p>
 <p><code>cmd /S /k &quot;code -g [file name]:[line number]&quot;</code>。注意引号也要带上。作用是以文本的方式读取启动命令。</p>
 <p><img src="https://kulya-pic.oss-cn-shanghai.aliyuncs.com/202210151053317.png" alt="221015_105305"></p>
 ]]></content>
