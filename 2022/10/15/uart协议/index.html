@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kulya97.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.13.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="UART接口及verilog代码实现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UART接口及verilog代码实现">
+<meta property="og:url" content="https://kulya97.github.io/2022/10/15/uart%E5%8D%8F%E8%AE%AE/index.html">
+<meta property="og:site_name" content="黄文杰的博客">
+<meta property="og:description" content="UART接口及verilog代码实现">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-2ebc83957b33a1525468eed46d3139c8_720w.jpg">
+<meta property="article:published_time" content="2022-10-15T04:30:20.000Z">
+<meta property="article:modified_time" content="2022-10-15T04:31:06.777Z">
+<meta property="article:author" content="黄文杰">
+<meta property="article:tag" content="uart">
+<meta property="article:tag" content="verilog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic1.zhimg.com/80/v2-2ebc83957b33a1525468eed46d3139c8_720w.jpg">
+
+
+<link rel="canonical" href="https://kulya97.github.io/2022/10/15/uart%E5%8D%8F%E8%AE%AE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://kulya97.github.io/2022/10/15/uart%E5%8D%8F%E8%AE%AE/","path":"2022/10/15/uart协议/","title":"UART接口及verilog代码实现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>UART接口及verilog代码实现 | 黄文杰的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">黄文杰的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">kulya97</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">协议介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B6%E5%B1%82%E4%BB%A3%E7%A0%81"><span class="nav-number">2.1.</span> <span class="nav-text">顶层代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E6%94%B6%E6%A8%A1%E5%9D%97"><span class="nav-number">2.2.</span> <span class="nav-text">接收模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E6%A8%A1%E5%9D%97"><span class="nav-number">2.3.</span> <span class="nav-text">发送模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E6%94%B6%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">2.4.</span> <span class="nav-text">接收寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%8C%96%E6%B5%8B%E8%AF%95"><span class="nav-number">2.5.</span> <span class="nav-text">例化测试</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄文杰"
+      src="/images/header.jpeg">
+  <p class="site-author-name" itemprop="name">黄文杰</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么都没留下</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kulya97" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kulya97" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1942186814@qq.com" title="E-Mail → mailto:1942186814@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+    <div class="links-of-blogroll motion-element links-of-blogroll-block">
+      <div class="links-of-blogroll-title">
+        <!-- modify icon to fire by szw -->
+        <i class="fa fa-history fa-" aria-hidden="true"></i>
+        近期文章
+      </div>
+      <ul class="links-of-blogroll-list">
+-        
++        
+        
+          <li>
+            <a href="/2022/10/15/uart%E5%8D%8F%E8%AE%AE/" title="UART接口及verilog代码实现" target="_blank">UART接口及verilog代码实现</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/15/Blog%E4%B8%80%E9%94%AE%E5%88%9B%E5%BB%BA%E5%92%8C%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/" title="Blog一键创建和部署命令" target="_blank">Blog一键创建和部署命令</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/15/viado%E4%BD%BF%E7%94%A8ila%E5%9C%A8%E7%BA%BF%E8%B0%83%E8%AF%95/" title="VIVADO使用ILA在线调试" target="_blank">VIVADO使用ILA在线调试</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/15/viado%E4%BD%BF%E7%94%A8VScode/" title="VIVADO使用VScode作为文本编辑器的注意事项" target="_blank">VIVADO使用VScode作为文本编辑器的注意事项</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/14/viado%E6%8A%A5%E9%94%99/" title="VIVADO报错Invalid option value specified for '-files'.解决办法。" target="_blank">VIVADO报错Invalid option value specified for '-files'.解决办法。</a>
+          </li>
+        
+      </ul>
+    </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+  <a href="https://github.com/kulya97" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://kulya97.github.io/2022/10/15/uart%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpeg">
+      <meta itemprop="name" content="黄文杰">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄文杰的博客">
+      <meta itemprop="description" content="这个人很懒，什么都没留下">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="UART接口及verilog代码实现 | 黄文杰的博客">
+      <meta itemprop="description" content="UART接口及verilog代码实现">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          UART接口及verilog代码实现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-10-15 12:30:20 / 修改时间：12:31:06" itemprop="dateCreated datePublished" datetime="2022-10-15T12:30:20+08:00">2022-10-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/verilog/" itemprop="url" rel="index"><span itemprop="name">verilog</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/verilog/%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index"><span itemprop="name">协议</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>15k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>13 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">UART接口及verilog代码实现</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="协议介绍"><a href="#协议介绍" class="headerlink" title="协议介绍"></a>协议介绍</h2><p><strong>通用异步收发器</strong>（Universal Asynchronous Receiver&#x2F;Transmitter)，通常称作<strong>UART，是一种串行、异步、全双工的通信协议</strong>，在嵌入式领域应用的非常广泛。</p>
+<p>　　UART作为异步串行通信协议的一种，工作原理是将传输数据的每个二进制位一位接一位地传输。在UART通信协议中信号线上的状态为高电平时代表‘1’，信号线上的状态为低电平时代表‘0’。比如使用UART通信协议进行一个字节数据的传输时就是在信号线上产生八个高低电平的组合。</p>
+<ul>
+<li>串行通信是指利用一条传输线将数据一位位地顺序传送，也可以用两个信号线组成全双工通信，如rs232。特点是通信线路简单，利用简单的线缆就可实现通信，降低成本，适用于远距离通信，但传输速度慢的应用场合。</li>
+<li>异步通信以一个字符为传输单位，通信中两个字符间的时间间隔多少是不固定的，然而在同一个字符中的两个相邻位间的时间间隔是固定的。通俗说是两个uart设备之间通信的时候不需要时钟线，这时候就需要在两个uart设备上指定相同的传输速率，以及空闲位、起始位、校验位、结束位，也就是遵循相同的协议。</li>
+<li>数据传送速率用波特率来表示，即每秒钟传送的二进制位数。例如数据传送速率为120字符&#x2F;秒，而每一个字符为10位（1个起始位，8个数据位，1个校验位，1个结束位），则其传送的波特率为10×120＝1200字符&#x2F;秒＝1200波特。</li>
+</ul>
+<p>数据通信格式如下图：</p>
+<p><img src="https://pic1.zhimg.com/80/v2-2ebc83957b33a1525468eed46d3139c8_720w.jpg" alt="img"></p>
+<p>其中各位的意义如下：</p>
+<p><strong>空闲位：</strong></p>
+<p>　　UART协议规定，当总线处于空闲状态时信号线的状态为‘1’即高电平，表示当前线路上没有数据传输。</p>
+<p><strong>起始位：</strong></p>
+<p>　　每开始一次通信时发送方先发出一个逻辑”0”的信号（低电平），表示传输字符的开始。因为总线空闲时为高电平所以开始一次通信时先发送一个明显区别于空闲状态的信号即低电平。<strong>起始位的意义是每次发送都做一次时钟同步。</strong></p>
+<p><strong>数据位：</strong></p>
+<p>　　起始位之后就是我们所要传输的数据，数据位可以是5、6、7、8，9位等，构成一个字符（一般都是8位）。如ASCII码（7位），扩展BCD码（8位）。先发送<strong>最低位</strong>，最后发送<strong>最高位</strong>，使用低电平表示‘0’高电平表示‘1’完成数据位的传输。</p>
+<p><strong>奇偶校验位：</strong></p>
+<p>　　数据位加上这一位后，使得“1”的位数应为偶数(偶校验)或奇数(奇校验)，以此来校验数据传送的正确性。校验位其实是调整个数，串口校验分几种方式：</p>
+<ul>
+<li>1、无校验（no parity）。</li>
+<li>2、奇校验（odd parity）：如果数据位中“1”的数目是偶数，则校验位为“1”，如果“1”的数目是奇数，校验位为“0”。</li>
+<li>3、偶校验（even parity）：如果数据为中“1”的数目是偶数，则校验位为“0”，如果为奇数，校验位为“1”。</li>
+<li>4、mark parity：校验位始终为1（不常用）。</li>
+<li>5、parity：校验位始终为0（不常用）。</li>
+</ul>
+<p><strong>停止位：</strong></p>
+<p>　　它是一个字符数据的结束标志。可以是1位、1.5位、2位的高电平。 由于数据是在传输线上定时的，并且每一个设备有其自己的时钟，很可能在通信中两台设备之间出现了小小的不同步。因此停止位不仅仅是表示传输的结束，并且提供计算机校正时钟的机会。停止位个数越多，数据传输越稳定，但是数据传输速度也越慢。</p>
+<p><strong>波特率：</strong></p>
+<p>数据传输速率使用波特率来表示。单位bps（bits per second），常见的波特率9600bps、115200bps等等，其他标准的波特率是1200，2400，4800，19200，38400，57600。举个例子，如果串口波特率设置为9600bps，那么传输一个比特需要的时间是1&#x2F;9600≈104.2us。</p>
+<p>以9600，8-N-1（9600波特率，8个数据位，没有校验位，1位停止位）为例，这是目前最常用的串口配置，现在我们传输“O”“K”两个ASCII值，“O”的ASCII为79，对应的二进制数据为<strong>01001111</strong>，“K”对应的二进制数据为<strong>01001011</strong>，传输的格式数据如下图所示：</p>
+<p>串口波特率为9600，1bit传输时间大约为104us，传送一个数据实际是10个比特（开始位-8个数据位-停止位），一个bytes传输速率实际为9600*8&#x2F;10&#x3D;7680bps。</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>本代码根据正点原子的uart代码修改，主要增加一些中断标志位。</p>
+<p>主要实现的功能是：</p>
+<p>1.增加接收中断，4byte数据中断，空闲中断。4byte中断是目前使用的主要方式，接收连续数据每4byte内部产生一个中断信号。空闲中断主要用来数据清零和后期拓展。</p>
+<p>2.串口发送做了一个4byte的发送fifo缓冲。</p>
+<h3 id="顶层代码"><a href="#顶层代码" class="headerlink" title="顶层代码"></a>顶层代码</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> uart_module#</span><br><span class="line">(</span><br><span class="line">    <span class="keyword">parameter</span>     CLK_FRE        = <span class="number">50</span>          ,            <span class="comment">//Mhz</span></span><br><span class="line">    <span class="keyword">parameter</span>     BPS            = <span class="number">9600</span>         ,            <span class="comment">//uart bps</span></span><br><span class="line">    <span class="keyword">parameter</span>     IDLE_CYCLE     = <span class="number">20</span>          ,            <span class="comment">//idle time</span></span><br><span class="line">    <span class="keyword">parameter</span>     REG_SIZE       = <span class="number">32</span>           </span><br><span class="line">)(</span><br><span class="line">    <span class="keyword">input</span>                        sys_clk        ,           <span class="comment">//system clock 50Mhz on board</span></span><br><span class="line">    <span class="keyword">input</span>                        rst_n          ,           <span class="comment">//reset ,low active</span></span><br><span class="line">    <span class="keyword">input</span>                        uart_rx        ,</span><br><span class="line">    <span class="keyword">output</span>                       uart_tx        ,</span><br><span class="line">    <span class="keyword">output</span> [REG_SIZE-<span class="number">1</span>:<span class="number">0</span>]        uart_rx_reg    ,           <span class="comment">//uart reg </span></span><br><span class="line">    <span class="keyword">output</span>                       uart_rx_ready  ,           <span class="comment">//if update ready=1</span></span><br><span class="line">    <span class="keyword">input</span> [<span class="number">31</span>:<span class="number">0</span>]                 uart_tx_reg    ,</span><br><span class="line">    <span class="keyword">input</span>                        uart_tx_en  </span><br><span class="line">);</span><br><span class="line"><span class="comment">/*******************************************************************/</span></span><br><span class="line"><span class="keyword">wire</span>                             tx_data_valid  ;</span><br><span class="line"><span class="keyword">wire</span>                             tx_data_ready  ;</span><br><span class="line"><span class="keyword">wire</span>                             tx_interrupt   ;</span><br><span class="line"><span class="keyword">wire</span> [<span class="number">7</span>:<span class="number">0</span>]                       tx_data        ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">wire</span>                             rx_data_valid  ;</span><br><span class="line"><span class="keyword">wire</span>                             rx_data_ready  ;</span><br><span class="line"><span class="keyword">wire</span>                             rx_interrupt   ;</span><br><span class="line"><span class="keyword">wire</span>                             rx_frame_idle  ;</span><br><span class="line"><span class="keyword">wire</span> [<span class="number">7</span>:<span class="number">0</span>]                       rx_data        ;</span><br><span class="line"><span class="comment">/*******************************************************************/</span></span><br><span class="line"><span class="keyword">wire</span> [<span class="number">31</span>:<span class="number">0</span>]                      din            ;           <span class="comment">// input wire [31 : 0] din</span></span><br><span class="line"><span class="keyword">wire</span>                            wr_en           ;           <span class="comment">// input wire wr_en</span></span><br><span class="line"><span class="keyword">wire</span>                            rd_en           ;           <span class="comment">// input wire rd_en</span></span><br><span class="line"><span class="keyword">wire</span> [<span class="number">7</span>:<span class="number">0</span>]                      dout            ;           <span class="comment">// output wire [7 : 0] dout</span></span><br><span class="line"><span class="keyword">wire</span>                            full            ;           <span class="comment">// output wire full</span></span><br><span class="line"><span class="keyword">wire</span>                            empty           ;           <span class="comment">// output wire empty</span></span><br><span class="line"><span class="keyword">wire</span>                            valid           ;</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//开启接收数据</span></span><br><span class="line"><span class="keyword">assign</span> rx_data_ready = <span class="number">1&#x27;b1</span>;</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//写tx fifo数据</span></span><br><span class="line"><span class="keyword">assign</span> wr_en=uart_tx_en ;</span><br><span class="line"><span class="keyword">assign</span> din=uart_tx_reg  ;</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//读tx fifo数据</span></span><br><span class="line"><span class="keyword">assign</span> rd_en=valid&amp;&amp;tx_data_ready;</span><br><span class="line"><span class="keyword">assign</span> tx_data=dout;</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//发送数据</span></span><br><span class="line"><span class="keyword">assign</span> tx_data_valid=valid&amp;&amp;tx_data_ready;</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line">uart_rx#</span><br><span class="line">(</span><br><span class="line">    <span class="variable">.CLK_FRE</span>(CLK_FRE),</span><br><span class="line">    <span class="variable">.BAUD_RATE</span>(BPS),</span><br><span class="line">    <span class="variable">.IDLE_CYCLE</span>(IDLE_CYCLE)</span><br><span class="line">) uart_rx_inst</span><br><span class="line">(</span><br><span class="line">    <span class="variable">.clk</span>                        (sys_clk               ),</span><br><span class="line">    <span class="variable">.rst_n</span>                      (rst_n                 ),</span><br><span class="line">    <span class="variable">.rx_data</span>                    (rx_data               ),</span><br><span class="line">    <span class="variable">.rx_data_valid</span>              (rx_data_valid         ),</span><br><span class="line">    <span class="variable">.rx_data_ready</span>              (rx_data_ready         ),</span><br><span class="line">    <span class="variable">.rx_frame_idle</span>              (rx_frame_idle         ),</span><br><span class="line">    <span class="variable">.rx_interrupt</span>               (rx_interrupt          ),</span><br><span class="line">    <span class="variable">.rx_pin</span>                     (uart_rx               )</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">uart_tx#</span><br><span class="line">(</span><br><span class="line">    <span class="variable">.CLK_FRE</span>(CLK_FRE),</span><br><span class="line">    <span class="variable">.BAUD_RATE</span>(BPS)</span><br><span class="line">) uart_tx_inst</span><br><span class="line">(</span><br><span class="line">    <span class="variable">.clk</span>                        (sys_clk              ),</span><br><span class="line">    <span class="variable">.rst_n</span>                      (rst_n                ),</span><br><span class="line">    <span class="variable">.tx_data</span>                    (tx_data              ),</span><br><span class="line">    <span class="variable">.tx_data_valid</span>              (tx_data_valid        ),</span><br><span class="line">    <span class="variable">.tx_data_ready</span>              (tx_data_ready        ),</span><br><span class="line">    <span class="variable">.tx_interrupt</span>               (tx_interrupt         ),</span><br><span class="line">    <span class="variable">.tx_pin</span>                     (uart_tx              )</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">fifo_tx fifo_tx_inst (</span><br><span class="line">    <span class="variable">.clk</span>                        (sys_clk              ),          <span class="comment">// input wire clk</span></span><br><span class="line">    <span class="variable">.din</span>                        (din                  ),          <span class="comment">// input wire [31 : 0] din</span></span><br><span class="line">    <span class="variable">.wr_en</span>                      (wr_en                ),          <span class="comment">// input wire wr_en</span></span><br><span class="line">    <span class="variable">.rd_en</span>                      (rd_en                ),          <span class="comment">// input wire rd_en</span></span><br><span class="line">    <span class="variable">.dout</span>                       (dout                 ),          <span class="comment">// output wire [7 : 0] dout</span></span><br><span class="line">    <span class="variable">.full</span>                       (full                 ),          <span class="comment">// output wire full</span></span><br><span class="line">    <span class="variable">.empty</span>                      (empty                ),          <span class="comment">// output wire empty</span></span><br><span class="line">    <span class="variable">.valid</span>                      (valid                )           <span class="comment">// output wire valid</span></span><br><span class="line">);</span><br><span class="line">uart_reg #(</span><br><span class="line">    <span class="variable">.REG_SIZE</span>(REG_SIZE)</span><br><span class="line">)uart_reg0</span><br><span class="line">(</span><br><span class="line">    <span class="variable">.clk</span>                        (sys_clk             ),</span><br><span class="line">    <span class="variable">.rst_n</span>                      (rst_n               ),</span><br><span class="line">    <span class="variable">.rx_data</span>                    (rx_data             ),</span><br><span class="line">    <span class="variable">.rx_data_valid</span>              (rx_data_valid       ),</span><br><span class="line">    <span class="variable">.rx_frame_idle</span>              (rx_frame_idle       ),</span><br><span class="line">    <span class="variable">.rx_interrupt</span>               (rx_interrupt        ),</span><br><span class="line">    <span class="variable">.reg_data</span>                   (uart_rx_reg         ),</span><br><span class="line">    <span class="variable">.reg_ready</span>                  (uart_rx_ready       )</span><br><span class="line">    );</span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="接收模块"><a href="#接收模块" class="headerlink" title="接收模块"></a>接收模块</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//*******************************************************************************/</span></span><br><span class="line"><span class="keyword">module</span> uart_rx</span><br><span class="line">#(</span><br><span class="line">	<span class="keyword">parameter</span> CLK_FRE       =   <span class="number">50</span>                  ,                                         <span class="comment">//clock frequency(Mhz)</span></span><br><span class="line">	<span class="keyword">parameter</span> BAUD_RATE     =   <span class="number">115200</span>              ,                                     <span class="comment">//serial baud rate</span></span><br><span class="line">    <span class="keyword">parameter</span> IDLE_CYCLE    =    <span class="number">2</span>                                          <span class="comment">//空闲周期</span></span><br><span class="line">)</span><br><span class="line">(</span><br><span class="line">    <span class="keyword">input</span>                        clk                ,                                       <span class="comment">//时钟</span></span><br><span class="line">    <span class="keyword">input</span>                        rst_n              ,                                     <span class="comment">//复位</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span>[<span class="number">7</span>:<span class="number">0</span>]              rx_data            ,                                   <span class="comment">//数据</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span>                   rx_data_valid      ,                               <span class="comment">//有效</span></span><br><span class="line">    <span class="keyword">input</span>                        rx_data_ready      ,                               <span class="comment">//完成</span></span><br><span class="line">    <span class="keyword">output</span>                       rx_frame_idle      ,                               <span class="comment">//空闲中断</span></span><br><span class="line">    <span class="keyword">output</span>                       rx_interrupt       ,                               <span class="comment">//接收中断</span></span><br><span class="line">    <span class="keyword">input</span>                        rx_pin                                             <span class="comment">//</span></span><br><span class="line">);</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="keyword">localparam</span>      CYCLE           = CLK_FRE * <span class="number">1000000</span> / BAUD_RATE ;     <span class="comment">//bit周期</span></span><br><span class="line"><span class="keyword">localparam</span>      IDLE_TIME       = CYCLE * (IDLE_CYCLE+<span class="number">10</span>)       ;        <span class="comment">//空闲判定时间</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">2</span>:<span class="number">0</span>]                         state              ;</span><br><span class="line"><span class="keyword">reg</span>[<span class="number">2</span>:<span class="number">0</span>]                         next_state         ;</span><br><span class="line"><span class="keyword">localparam</span>                       S_IDLE      = <span class="number">1</span>    ;                           <span class="comment">//空闲</span></span><br><span class="line"><span class="keyword">localparam</span>                       S_START     = <span class="number">2</span>    ;                           <span class="comment">//start bit</span></span><br><span class="line"><span class="keyword">localparam</span>                       S_REC_BYTE  = <span class="number">3</span>    ;                           <span class="comment">//data bits</span></span><br><span class="line"><span class="keyword">localparam</span>                       S_STOP      = <span class="number">4</span>    ;                           <span class="comment">//stop bit</span></span><br><span class="line"><span class="keyword">localparam</span>                       S_DATA      = <span class="number">5</span>    ;</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="keyword">reg</span>                              rx_d0              ;                                     <span class="comment">//delay 1 clock for rx_pin</span></span><br><span class="line"><span class="keyword">reg</span>                              rx_d1              ;                                     <span class="comment">//delay 1 clock for rx_d0</span></span><br><span class="line"><span class="keyword">wire</span>                             rx_negedge         ;                                <span class="comment">//数据下降沿 </span></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">7</span>:<span class="number">0</span>]                         rx_bits            ;                                   <span class="comment">//接受数据的临时存储</span></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">15</span>:<span class="number">0</span>]                        cycle_cnt          ;                                 <span class="comment">//baud counter</span></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">2</span>:<span class="number">0</span>]                         bit_cnt            ;                                    <span class="comment">//bit counter</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">	<span class="keyword">begin</span></span><br><span class="line">		rx_d0 &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line">		rx_d1 &lt;= <span class="number">1&#x27;b0</span>;	</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	<span class="keyword">begin</span></span><br><span class="line">		rx_d0 &lt;= rx_pin;</span><br><span class="line">		rx_d1 &lt;= rx_d0;</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">assign</span> rx_negedge = rx_d1 &amp;&amp; ~rx_d0;  <span class="comment">//下降沿</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		state &lt;= S_IDLE;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		state &lt;= next_state;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span>@(*)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">case</span>(state)</span><br><span class="line">		S_IDLE:</span><br><span class="line">			<span class="keyword">if</span>(rx_negedge)</span><br><span class="line">				next_state &lt;= S_START;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				next_state &lt;= S_IDLE;</span><br><span class="line">		S_START:</span><br><span class="line">			<span class="keyword">if</span>(cycle_cnt == CYCLE - <span class="number">1</span>)<span class="comment">//一个周期脉冲后，转到接收状态</span></span><br><span class="line">				next_state &lt;= S_REC_BYTE;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				next_state &lt;= S_START;</span><br><span class="line">		S_REC_BYTE:</span><br><span class="line">			<span class="keyword">if</span>(cycle_cnt == CYCLE - <span class="number">1</span>  &amp;&amp; bit_cnt == <span class="number">3&#x27;d7</span>)  <span class="comment">//接受完成8bit，转移到停止位</span></span><br><span class="line">				next_state &lt;= S_STOP;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				next_state &lt;= S_REC_BYTE;</span><br><span class="line">		S_STOP:</span><br><span class="line">			<span class="keyword">if</span>(cycle_cnt == CYCLE/<span class="number">2</span> - <span class="number">1</span>)<span class="comment">//半位周期，避免错过下一个字节接收器</span></span><br><span class="line">				next_state &lt;= S_DATA;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				next_state &lt;= S_STOP;</span><br><span class="line">		S_DATA:</span><br><span class="line">			<span class="keyword">if</span>(rx_data_ready)    <span class="comment">//数据接受完成</span></span><br><span class="line">				next_state &lt;= S_IDLE;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				next_state &lt;= S_DATA;</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			next_state &lt;= S_IDLE;</span><br><span class="line">	<span class="keyword">endcase</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//bit时钟计数</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		cycle_cnt &lt;= <span class="number">16&#x27;d0</span>;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>((state == S_REC_BYTE &amp;&amp; cycle_cnt == CYCLE - <span class="number">1</span>) || next_state != state)<span class="comment">//状态跳变时清空，接受状态每一个字节清空一次</span></span><br><span class="line">		cycle_cnt &lt;= <span class="number">16&#x27;d0</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		cycle_cnt &lt;= cycle_cnt + <span class="number">16&#x27;d1</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//bit计数</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		<span class="keyword">begin</span></span><br><span class="line">			bit_cnt &lt;= <span class="number">3&#x27;d0</span>;</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(state == S_REC_BYTE)</span><br><span class="line">		<span class="keyword">if</span>(cycle_cnt == CYCLE - <span class="number">1</span>)<span class="comment">//当接受状态的最后bit数+1</span></span><br><span class="line">			bit_cnt &lt;= bit_cnt + <span class="number">3&#x27;d1</span>;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			bit_cnt &lt;= bit_cnt;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		bit_cnt &lt;= <span class="number">3&#x27;d0</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//锁存bit数据</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		rx_bits &lt;= <span class="number">8&#x27;d0</span>;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(state == S_REC_BYTE &amp;&amp; cycle_cnt == CYCLE/<span class="number">2</span> - <span class="number">1</span>)</span><br><span class="line">		rx_bits[bit_cnt] &lt;= rx_d1;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		rx_bits &lt;= rx_bits; </span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//锁存接收到的8bit数据</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">if</span>(!rst_n)</span><br><span class="line">		rx_data &lt;= <span class="number">8&#x27;d0</span>;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(state == S_STOP &amp;&amp; next_state != state)</span><br><span class="line">		rx_data &lt;= rx_bits;<span class="comment">//latch received data</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//更新数据准备状态</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		rx_data_valid &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(state == S_IDLE)<span class="comment">//停止位的开始</span></span><br><span class="line">	    rx_data_valid &lt;= <span class="number">1&#x27;b1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		rx_data_valid &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">以下为自行添加的内容</span></span><br><span class="line"><span class="comment">add：</span></span><br><span class="line"><span class="comment">    串口接收中断                    rx_bit_idle</span></span><br><span class="line"><span class="comment">    串口空闲中断                    rx_frame_idle</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//bit中断</span></span><br><span class="line"><span class="keyword">assign</span> rx_interrupt=((state==S_DATA) &amp;&amp; (next_state != state));</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//空闲时间计数</span></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">31</span>:<span class="number">0</span>]   idle_cnt           ;</span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n) <span class="keyword">begin</span></span><br><span class="line">        idle_cnt&lt;=<span class="number">1&#x27;d0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(!rx_interrupt&amp;&amp;idle_cnt&lt;IDLE_TIME)</span><br><span class="line">        idle_cnt &lt;= idle_cnt + <span class="number">1&#x27;d1</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(rx_interrupt)<span class="keyword">begin</span></span><br><span class="line">        idle_cnt&lt;=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">//帧空闲标志</span></span><br><span class="line"><span class="keyword">reg</span> frame_idle_flag;</span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n) <span class="keyword">begin</span></span><br><span class="line">        frame_idle_flag&lt;=<span class="number">1&#x27;d0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(idle_cnt&gt;=IDLE_TIME)<span class="keyword">begin</span></span><br><span class="line">        frame_idle_flag&lt;=<span class="number">1&#x27;b1</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">        frame_idle_flag&lt;=<span class="number">1&#x27;b0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">//帧空闲标志打拍</span></span><br><span class="line"><span class="keyword">reg</span> frame_idle_flag_n;</span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n) <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)<span class="keyword">begin</span></span><br><span class="line">        frame_idle_flag_n&lt;=<span class="number">1&#x27;b0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">        frame_idle_flag_n&lt;=frame_idle_flag;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">assign</span> rx_frame_idle=frame_idle_flag&amp;&amp;~frame_idle_flag_n;</span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="发送模块"><a href="#发送模块" class="headerlink" title="发送模块"></a>发送模块</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//*******************************************************************************/</span></span><br><span class="line"><span class="keyword">module</span> uart_tx</span><br><span class="line">#(</span><br><span class="line">    <span class="keyword">parameter</span> CLK_FRE = <span class="number">50</span>,      <span class="comment">//clock frequency(Mhz)</span></span><br><span class="line">    <span class="keyword">parameter</span> BAUD_RATE = <span class="number">115200</span> <span class="comment">//serial baud rate</span></span><br><span class="line">)</span><br><span class="line">(</span><br><span class="line">    <span class="keyword">input</span>                        clk            ,           <span class="comment">//clock input</span></span><br><span class="line">    <span class="keyword">input</span>                        rst_n          ,           <span class="comment">//asynchronous reset input, low active </span></span><br><span class="line">    <span class="keyword">input</span> [<span class="number">7</span>:<span class="number">0</span>]                  tx_data        ,           <span class="comment">//data to send</span></span><br><span class="line">    <span class="keyword">input</span>                        tx_data_valid  ,           <span class="comment">//data to be sent is valid</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span>                   tx_data_ready  ,           <span class="comment">//send ready</span></span><br><span class="line">    <span class="keyword">output</span>                       tx_interrupt   ,</span><br><span class="line">    <span class="keyword">output</span>                       tx_pin                     <span class="comment">//serial data output</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">localparam</span>                       CYCLE = CLK_FRE * <span class="number">1000000</span> / BAUD_RATE;</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//状态机</span></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">2</span>:<span class="number">0</span>]                         state          ;</span><br><span class="line"><span class="keyword">reg</span>[<span class="number">2</span>:<span class="number">0</span>]                         next_state     ;</span><br><span class="line"><span class="keyword">localparam</span>          S_IDLE       = <span class="number">1</span>            ;<span class="comment">//空闲</span></span><br><span class="line"><span class="keyword">localparam</span>          S_START      = <span class="number">2</span>            ;<span class="comment">//起始位</span></span><br><span class="line"><span class="keyword">localparam</span>          S_SEND_BYTE  = <span class="number">3</span>            ;<span class="comment">//数据位</span></span><br><span class="line"><span class="keyword">localparam</span>          S_STOP       = <span class="number">4</span>            ;<span class="comment">//停止位</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">15</span>:<span class="number">0</span>]                        cycle_cnt      ; <span class="comment">//波特率计数</span></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">2</span>:<span class="number">0</span>]                         bit_cnt        ;<span class="comment">//数据计数</span></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">7</span>:<span class="number">0</span>]                         tx_data_latch  ; <span class="comment">//数据</span></span><br><span class="line"><span class="keyword">reg</span>                              tx_reg         ;</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="keyword">assign</span> tx_pin = tx_reg;</span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		state &lt;= S_IDLE;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		state &lt;= next_state;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">always</span>@(*)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">case</span>(state)</span><br><span class="line">		S_IDLE:</span><br><span class="line">			<span class="keyword">if</span>(tx_data_valid == <span class="number">1&#x27;b1</span>)</span><br><span class="line">				next_state &lt;= S_START;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				next_state &lt;= S_IDLE;</span><br><span class="line">		S_START:</span><br><span class="line">			<span class="keyword">if</span>(cycle_cnt == CYCLE - <span class="number">1</span>)</span><br><span class="line">				next_state &lt;= S_SEND_BYTE;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				next_state &lt;= S_START;</span><br><span class="line">		S_SEND_BYTE:</span><br><span class="line">			<span class="keyword">if</span>(cycle_cnt == CYCLE - <span class="number">1</span>  &amp;&amp; bit_cnt == <span class="number">3&#x27;d7</span>)</span><br><span class="line">				next_state &lt;= S_STOP;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				next_state &lt;= S_SEND_BYTE;</span><br><span class="line">		S_STOP:</span><br><span class="line">			<span class="keyword">if</span>(cycle_cnt == CYCLE - <span class="number">1</span>)</span><br><span class="line">				next_state &lt;= S_IDLE;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				next_state &lt;= S_STOP;</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			next_state &lt;= S_IDLE;</span><br><span class="line">	<span class="keyword">endcase</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//波特率产生</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		cycle_cnt &lt;= <span class="number">16&#x27;d0</span>;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>((state == S_SEND_BYTE &amp;&amp; cycle_cnt == CYCLE - <span class="number">1</span>) || next_state != state)</span><br><span class="line">		cycle_cnt &lt;= <span class="number">16&#x27;d0</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		cycle_cnt &lt;= cycle_cnt + <span class="number">16&#x27;d1</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//检测到起始信号，锁存数据</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		<span class="keyword">begin</span></span><br><span class="line">			tx_data_latch &lt;= <span class="number">8&#x27;d0</span>;</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(state == S_IDLE &amp;&amp; tx_data_valid == <span class="number">1&#x27;b1</span>)</span><br><span class="line">			tx_data_latch &lt;= tx_data;</span><br><span class="line">		</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//数据计数</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		<span class="keyword">begin</span></span><br><span class="line">			bit_cnt &lt;= <span class="number">3&#x27;d0</span>;</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(state == S_SEND_BYTE)</span><br><span class="line">		<span class="keyword">if</span>(cycle_cnt == CYCLE - <span class="number">1</span>)</span><br><span class="line">			bit_cnt &lt;= bit_cnt + <span class="number">3&#x27;d1</span>;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			bit_cnt &lt;= bit_cnt;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		bit_cnt &lt;= <span class="number">3&#x27;d0</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//发送</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		tx_reg &lt;= <span class="number">1&#x27;b1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		<span class="keyword">case</span>(state)</span><br><span class="line">			S_IDLE,S_STOP:</span><br><span class="line">				tx_reg &lt;= <span class="number">1&#x27;b1</span>; </span><br><span class="line">			S_START:</span><br><span class="line">				tx_reg &lt;= <span class="number">1&#x27;b0</span>; </span><br><span class="line">			S_SEND_BYTE:</span><br><span class="line">				tx_reg &lt;= tx_data_latch[bit_cnt];</span><br><span class="line">			<span class="keyword">default</span>:</span><br><span class="line">				tx_reg &lt;= <span class="number">1&#x27;b1</span>; </span><br><span class="line">		<span class="keyword">endcase</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="comment">//刷新状态</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)</span><br><span class="line">		<span class="keyword">begin</span></span><br><span class="line">			tx_data_ready &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(state == S_IDLE&amp;&amp;tx_data_valid == <span class="number">1&#x27;b0</span>)</span><br><span class="line">			tx_data_ready &lt;= <span class="number">1&#x27;b1</span>;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			tx_data_ready &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/***********************************************************************/</span></span><br><span class="line"><span class="keyword">reg</span> tx_interrupt_r;</span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n) <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n) <span class="keyword">begin</span></span><br><span class="line">      tx_interrupt_r&lt;=<span class="number">1&#x27;b0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(state == S_STOP &amp;&amp; cycle_cnt == CYCLE - <span class="number">1</span>) <span class="keyword">begin</span></span><br><span class="line">        tx_interrupt_r&lt;=<span class="number">1&#x27;b1</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">      tx_interrupt_r&lt;=<span class="number">1&#x27;b0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">assign</span> tx_interrupt=tx_interrupt_r;</span><br><span class="line"><span class="keyword">endmodule</span> </span><br></pre></td></tr></table></figure>
+
+<h3 id="接收寄存器"><a href="#接收寄存器" class="headerlink" title="接收寄存器"></a>接收寄存器</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">`<span class="keyword">timescale</span> 1ns / 1ps</span></span><br><span class="line"><span class="keyword">module</span> uart_reg #(</span><br><span class="line">    <span class="keyword">parameter</span>     REG_SIZE       = <span class="number">32</span></span><br><span class="line">)(</span><br><span class="line">    <span class="keyword">input</span>                   clk                 ,</span><br><span class="line">    <span class="keyword">input</span>                   rst_n               ,</span><br><span class="line">    <span class="keyword">input</span>  [<span class="number">7</span>:<span class="number">0</span>]            rx_data             ,</span><br><span class="line">    <span class="keyword">input</span>                   rx_data_valid       ,</span><br><span class="line">    <span class="keyword">input</span>                   rx_frame_idle       ,</span><br><span class="line">    <span class="keyword">input</span>                   rx_interrupt        ,</span><br><span class="line">    <span class="keyword">output</span>  [REG_SIZE-<span class="number">1</span>:<span class="number">0</span>]  reg_data            ,</span><br><span class="line">    <span class="keyword">output</span>                  reg_ready           </span><br><span class="line">);</span><br><span class="line"><span class="keyword">reg</span> [REG_SIZE-<span class="number">1</span>:<span class="number">0</span>]uart_reg_r;</span><br><span class="line"><span class="comment">/**************************************************************/</span></span><br><span class="line"><span class="comment">//接收数据</span></span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)<span class="keyword">begin</span></span><br><span class="line">      uart_reg_r&lt;=<span class="number">255&#x27;d0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(rx_interrupt)<span class="keyword">begin</span></span><br><span class="line">      uart_reg_r&lt;=&#123;uart_reg_r,rx_data&#125;;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(rx_frame_idle)<span class="keyword">begin</span></span><br><span class="line">      uart_reg_r&lt;=uart_reg_r;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/**************************************************************/</span></span><br><span class="line"><span class="comment">//计数</span></span><br><span class="line"><span class="keyword">reg</span> [<span class="number">7</span>:<span class="number">0</span>]data_cnt;</span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)<span class="keyword">begin</span></span><br><span class="line">      data_cnt&lt;=<span class="number">8&#x27;d0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(rx_interrupt)<span class="keyword">begin</span></span><br><span class="line">      data_cnt&lt;=data_cnt+<span class="number">1&#x27;d1</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(rx_frame_idle||data_cnt==<span class="number">8&#x27;d4</span>)<span class="keyword">begin</span></span><br><span class="line">      data_cnt&lt;=<span class="number">8&#x27;d0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/**************************************************************/</span></span><br><span class="line"><span class="comment">//生成信号</span></span><br><span class="line"><span class="keyword">reg</span> [REG_SIZE-<span class="number">1</span>:<span class="number">0</span>]reg_data_r;</span><br><span class="line"><span class="keyword">reg</span> reg_ready_r;</span><br><span class="line"><span class="keyword">always</span>@(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(!rst_n)<span class="keyword">begin</span></span><br><span class="line">      reg_data_r&lt;=<span class="number">255&#x27;d0</span>;</span><br><span class="line">      reg_ready_r&lt;=<span class="number">1&#x27;d0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(data_cnt==<span class="number">8&#x27;d4</span>)<span class="keyword">begin</span></span><br><span class="line">      reg_data_r&lt;=uart_reg_r;</span><br><span class="line">      reg_ready_r&lt;=<span class="number">1&#x27;d1</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">        reg_ready_r&lt;=<span class="number">1&#x27;d0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">/**************************************************************/</span></span><br><span class="line"><span class="keyword">assign</span> reg_ready =reg_ready_r;</span><br><span class="line"><span class="keyword">assign</span> reg_data   =reg_data_r;</span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="例化测试"><a href="#例化测试" class="headerlink" title="例化测试"></a>例化测试</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">wire</span> [<span class="number">31</span>:<span class="number">0</span>] UART_REG;           <span class="comment">//32位串口寄存器</span></span><br><span class="line"><span class="keyword">wire</span> uart_ready_flag;           <span class="comment">//串口指令ready信号</span></span><br><span class="line"><span class="keyword">wire</span> sync_uart_ready_flag;      <span class="comment">//同步串口指令ready信号</span></span><br><span class="line"><span class="comment">//串口</span></span><br><span class="line"><span class="keyword">wire</span> [<span class="number">31</span>:<span class="number">0</span>]                 uart_tx_reg;</span><br><span class="line"><span class="keyword">wire</span>  uart_tx_en;</span><br><span class="line"></span><br><span class="line">uart_module uart0(</span><br><span class="line">    <span class="variable">.sys_clk</span>        (CLK_UART_50M       ),</span><br><span class="line">    <span class="variable">.rst_n</span>          (RST_N              ),</span><br><span class="line">    <span class="variable">.uart_rx</span>        (UART_RX            ),</span><br><span class="line">    <span class="variable">.uart_tx</span>        (UART_TX            ),</span><br><span class="line">    <span class="variable">.uart_rx_reg</span>    (UART_REG           ),</span><br><span class="line">    <span class="variable">.uart_rx_ready</span>  (uart_ready_flag    ),</span><br><span class="line">    <span class="variable">.uart_tx_reg</span>    (UART_REG           ),</span><br><span class="line">    <span class="variable">.uart_tx_en</span>     (uart_ready_flag    )</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>祝老板长生不老，永远不死！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="黄文杰 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="黄文杰 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/uart/" rel="tag"># uart</a>
+              <a href="/tags/verilog/" rel="tag"># verilog</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/10/15/Blog%E4%B8%80%E9%94%AE%E5%88%9B%E5%BB%BA%E5%92%8C%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/" rel="prev" title="Blog一键创建和部署命令">
+                  <i class="fa fa-chevron-left"></i> Blog一键创建和部署命令
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄文杰</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">16k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">14 分钟</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
