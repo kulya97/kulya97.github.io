@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>VIVADO使用ILA在线调试</title>
-    <url>/2022/10/15/viado%E4%BD%BF%E7%94%A8ila%E5%9C%A8%E7%BA%BF%E8%B0%83%E8%AF%95/</url>
-    <content><![CDATA[<h1 id="dubug-hub的时钟频率和JTAG时钟频率的关系"><a href="#dubug-hub的时钟频率和JTAG时钟频率的关系" class="headerlink" title="dubug_hub的时钟频率和JTAG时钟频率的关系"></a>dubug_hub的时钟频率和JTAG时钟频率的关系</h1><p>在上板调试的时候，我们是通过JTAG时钟和fpga通信的。相关的ila波形数据，位流的下载也是通过JTAG进行的。<br>ila对JTAG时钟频率有要求：<strong>dubug_hub的时钟频率应该是JTAG时钟频率的2.5倍之上</strong>。<br>JTAG时钟频率可以在vivado界面调整。但是过低的JTAG时钟频率会导致下载位流的时间过长，这是我们无法忍受的。<br>JTAG默认时钟频率15M，算出dubug_hub最低时钟37.5M.<br>所以在进行设计的时候，应该保证上述时钟频率关系。</p>
-<h1 id="ila时钟频率和被采样时钟频率"><a href="#ila时钟频率和被采样时钟频率" class="headerlink" title="ila时钟频率和被采样时钟频率"></a>ila时钟频率和被<a href="https://so.csdn.net/so/search?q=%E9%87%87%E6%A0%B7&spm=1001.2101.3001.7020">采样</a>时钟频率</h1><p><strong>根据采样定理ila时钟频率最好时被采样时钟频率的4倍以上</strong>，才可以得到比较好的时钟波形。但是我们只要看时钟是否work就行。只要ila时钟频率比被采样时钟频率高2倍就可以了。</p>
+    <title>Blog一键创建和部署命令</title>
+    <url>/2022/10/15/Blog%E4%B8%80%E9%94%AE%E5%88%9B%E5%BB%BA%E5%92%8C%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p> 使用bat脚本创建和部署Blog</p>
+<h1 id="创建blog脚本"><a href="#创建blog脚本" class="headerlink" title="创建blog脚本"></a>创建blog脚本</h1><p>创建blog文件，检测文件名是否重复，用typora打开。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line">E:</span><br><span class="line"><span class="built_in">cd</span> E:\Blog</span><br><span class="line">:setname</span><br><span class="line"><span class="built_in">set</span> /p name=输入Blog名称:</span><br><span class="line"><span class="built_in">echo</span> name:%name%</span><br><span class="line"><span class="built_in">echo</span> 等待创建。。。</span><br><span class="line"><span class="keyword">if</span> exist <span class="string">&quot;E:\Blog\source\_posts\%name%.md&quot;</span> <span class="built_in">echo</span> 文件已存在，请重新创建! &amp;&amp;goto setname</span><br><span class="line">hexo new post %name% &amp;&amp; start typora <span class="string">&quot;E:\Blog\source\_posts\%name%.md&quot;</span></span><br><span class="line">pause</span><br></pre></td></tr></table></figure>
+
+<h1 id="部署脚本"><a href="#部署脚本" class="headerlink" title="部署脚本"></a>部署脚本</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">@<span class="built_in">echo</span> on</span><br><span class="line">E:</span><br><span class="line"><span class="built_in">cd</span> E:\Blog</span><br><span class="line">hexo clean&amp;&amp;hexo g&amp;&amp;hexo d</span><br></pre></td></tr></table></figure>
+
+<h1 id="本地预览脚本"><a href="#本地预览脚本" class="headerlink" title="本地预览脚本"></a>本地预览脚本</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">@<span class="built_in">echo</span> on</span><br><span class="line">E:</span><br><span class="line"><span class="built_in">cd</span> E:\Blog</span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo s</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>next</tag>
+        <tag>bat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>VIVADO报错Invalid option value specified for &#39;-files&#39;.解决办法。</title>
+    <url>/2022/10/14/viado%E6%8A%A5%E9%94%99/</url>
+    <content><![CDATA[<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>解决方法是在设置中取消勾选<code>Use Core Containers for IP</code>。</p>
+<p><img src="https://kulya-pic.oss-cn-shanghai.aliyuncs.com/202210150104839.png" alt="221015_010153"></p>
 ]]></content>
       <categories>
         <category>vivado</category>
@@ -31,10 +52,10 @@
       </tags>
   </entry>
   <entry>
-    <title>VIVADO报错Invalid option value specified for &#39;-files&#39;.解决办法。</title>
-    <url>/2022/10/14/viado%E6%8A%A5%E9%94%99/</url>
-    <content><![CDATA[<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>解决方法是在设置中取消勾选<code>Use Core Containers for IP</code>。</p>
-<p><img src="https://kulya-pic.oss-cn-shanghai.aliyuncs.com/202210150104839.png" alt="221015_010153"></p>
+    <title>VIVADO使用ILA在线调试</title>
+    <url>/2022/10/15/viado%E4%BD%BF%E7%94%A8ila%E5%9C%A8%E7%BA%BF%E8%B0%83%E8%AF%95/</url>
+    <content><![CDATA[<h1 id="dubug-hub的时钟频率和JTAG时钟频率的关系"><a href="#dubug-hub的时钟频率和JTAG时钟频率的关系" class="headerlink" title="dubug_hub的时钟频率和JTAG时钟频率的关系"></a>dubug_hub的时钟频率和JTAG时钟频率的关系</h1><p>在上板调试的时候，我们是通过JTAG时钟和fpga通信的。相关的ila波形数据，位流的下载也是通过JTAG进行的。<br>ila对JTAG时钟频率有要求：<strong>dubug_hub的时钟频率应该是JTAG时钟频率的2.5倍之上</strong>。<br>JTAG时钟频率可以在vivado界面调整。但是过低的JTAG时钟频率会导致下载位流的时间过长，这是我们无法忍受的。<br>JTAG默认时钟频率15M，算出dubug_hub最低时钟37.5M.<br>所以在进行设计的时候，应该保证上述时钟频率关系。</p>
+<h1 id="ila时钟频率和被采样时钟频率"><a href="#ila时钟频率和被采样时钟频率" class="headerlink" title="ila时钟频率和被采样时钟频率"></a>ila时钟频率和被<a href="https://so.csdn.net/so/search?q=%E9%87%87%E6%A0%B7&spm=1001.2101.3001.7020">采样</a>时钟频率</h1><p><strong>根据采样定理ila时钟频率最好时被采样时钟频率的4倍以上</strong>，才可以得到比较好的时钟波形。但是我们只要看时钟是否work就行。只要ila时钟频率比被采样时钟频率高2倍就可以了。</p>
 ]]></content>
       <categories>
         <category>vivado</category>
