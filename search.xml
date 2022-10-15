@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>VIVADO使用VScode作为文本编辑器的注意事项</title>
-    <url>/2022/10/15/viado%E4%BD%BF%E7%94%A8VScode/</url>
-    <content><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>记录vivado使用VScode作为文本编辑器时的设置和bug处理方式。</p>
-<h1 id="设置VScode为vivado的代码编辑器（待编写）"><a href="#设置VScode为vivado的代码编辑器（待编写）" class="headerlink" title="设置VScode为vivado的代码编辑器（待编写）"></a>设置VScode为vivado的代码编辑器（待编写）</h1><h1 id="功能：代码格式化功能-待编写"><a href="#功能：代码格式化功能-待编写" class="headerlink" title="功能：代码格式化功能(待编写)"></a>功能：代码格式化功能(待编写)</h1><h1 id="BUG-用VScode打开代码经常卡死，磁盘占用拉满"><a href="#BUG-用VScode打开代码经常卡死，磁盘占用拉满" class="headerlink" title="BUG:用VScode打开代码经常卡死，磁盘占用拉满"></a>BUG:用VScode打开代码经常卡死，磁盘占用拉满</h1><p>原因是vivado没有正常解析VScode的启动命令。解决的方法也很简单只要把Text Editor的启动命令改成下面这段命令就可以了。</p>
-<p><code>cmd /S /k &quot;code -g [file name]:[line number]&quot;</code>。注意引号也要带上。作用是以文本的方式读取启动命令。</p>
-<p><img src="https://kulya-pic.oss-cn-shanghai.aliyuncs.com/202210151053317.png" alt="221015_105305"></p>
-]]></content>
-      <categories>
-        <category>vivado</category>
-        <category>vscode</category>
-      </categories>
-      <tags>
-        <tag>vscode</tag>
-        <tag>vivado</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>VIVADO使用ILA在线调试</title>
     <url>/2022/10/15/viado%E4%BD%BF%E7%94%A8ila%E5%9C%A8%E7%BA%BF%E8%B0%83%E8%AF%95/</url>
     <content><![CDATA[<h1 id="dubug-hub的时钟频率和JTAG时钟频率的关系"><a href="#dubug-hub的时钟频率和JTAG时钟频率的关系" class="headerlink" title="dubug_hub的时钟频率和JTAG时钟频率的关系"></a>dubug_hub的时钟频率和JTAG时钟频率的关系</h1><p>在上板调试的时候，我们是通过JTAG时钟和fpga通信的。相关的ila波形数据，位流的下载也是通过JTAG进行的。<br>ila对JTAG时钟频率有要求：<strong>dubug_hub的时钟频率应该是JTAG时钟频率的2.5倍之上</strong>。<br>JTAG时钟频率可以在vivado界面调整。但是过低的JTAG时钟频率会导致下载位流的时间过长，这是我们无法忍受的。<br>JTAG默认时钟频率15M，算出dubug_hub最低时钟37.5M.<br>所以在进行设计的时候，应该保证上述时钟频率关系。</p>
@@ -31,6 +14,23 @@
       </tags>
   </entry>
   <entry>
+    <title>VIVADO使用VScode作为文本编辑器的注意事项</title>
+    <url>/2022/10/15/viado%E4%BD%BF%E7%94%A8VScode/</url>
+    <content><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>记录vivado使用VScode作为文本编辑器时的设置和bug处理方式。</p>
+<h1 id="设置VScode为vivado的代码编辑器（待编写）"><a href="#设置VScode为vivado的代码编辑器（待编写）" class="headerlink" title="设置VScode为vivado的代码编辑器（待编写）"></a>设置VScode为vivado的代码编辑器（待编写）</h1><h1 id="功能：代码格式化功能-待编写"><a href="#功能：代码格式化功能-待编写" class="headerlink" title="功能：代码格式化功能(待编写)"></a>功能：代码格式化功能(待编写)</h1><h1 id="BUG-用VScode打开代码经常卡死，磁盘占用拉满"><a href="#BUG-用VScode打开代码经常卡死，磁盘占用拉满" class="headerlink" title="BUG:用VScode打开代码经常卡死，磁盘占用拉满"></a>BUG:用VScode打开代码经常卡死，磁盘占用拉满</h1><p>原因是vivado没有正常解析VScode的启动命令。解决的方法也很简单只要把Text Editor的启动命令改成下面这段命令就可以了。</p>
+<p><code>cmd /S /k &quot;code -g [file name]:[line number]&quot;</code>。注意引号也要带上。作用是以文本的方式读取启动命令。</p>
+<p><img src="https://kulya-pic.oss-cn-shanghai.aliyuncs.com/202210151053317.png" alt="221015_105305"></p>
+]]></content>
+      <categories>
+        <category>vivado</category>
+        <category>vscode</category>
+      </categories>
+      <tags>
+        <tag>vivado</tag>
+        <tag>vscode</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>VIVADO报错Invalid option value specified for &#39;-files&#39;.解决办法。</title>
     <url>/2022/10/14/viado%E6%8A%A5%E9%94%99/</url>
     <content><![CDATA[<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>解决方法是在设置中取消勾选<code>Use Core Containers for IP</code>。</p>
@@ -41,7 +41,6 @@
       </categories>
       <tags>
         <tag>vivado</tag>
-        <tag>默认1</tag>
       </tags>
   </entry>
 </search>
